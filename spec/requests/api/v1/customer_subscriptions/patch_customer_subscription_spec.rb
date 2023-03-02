@@ -24,33 +24,32 @@ RSpec.describe 'PATCH Customer Subscription' do
       expect(CustomerSubscription.first.status).to eq('inactive')
     end
 
-    xit 'will return a relevant error message if user or subscription is not valid' do
+    it 'will return a relevant error message if user or subscription is not valid' do
       bad_user_request = {
         customer_id: 9001,
-        subscription_id: new_subscription.id,
+        subscription_id: subscription.id,
         frequency: :biweekly,
         status: :active
       }
 
-      post '/api/v1/customer_subscriptions', headers: headers, params: JSON.generate(request)
+      patch '/api/v1/customer_subscriptions/9001', headers: headers, params: JSON.generate(bad_user_request)
       expect(response.status).to eq 400
       parsed_response = JSON.parse(response.body, symbolize_names: true)
 
-      expect(parsed_response).to eq({ message: 'User or subscription invalid.' })
+      expect(parsed_response).to eq({ error: 'Unable to update subscription.' })
     end
 
-    xit 'will return an appropriate error message if the request is invalid' do
+    it 'will return an appropriate error message if the request is invalid' do
       missing_status_request = {
         customer_id: customer.id,
-        subscription_id: new_subscription.id,
+        subscription_id: subscription.id,
         frequency: :weekly
       }
 
-      post '/api/v1/customer_subscriptions', headers: headers, params: JSON.generate(missing_status_request)
+      patch "/api/v1/customer_subscriptions/#{customer.id}", headers: headers, params: JSON.generate(missing_status_request)
       expect(response.status).to eq 400
       parsed_response = JSON.parse(response.body, symbolize_names: true)
-
-      expect(parsed_response).to eq({ status: ["can't be blank"] })
+      expect(parsed_response).to eq({ error: 'Unable to update subscription.' })
     end
   end
 end

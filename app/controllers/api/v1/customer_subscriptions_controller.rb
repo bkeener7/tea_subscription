@@ -17,12 +17,11 @@ class Api::V1::CustomerSubscriptionsController < ApplicationController
   end
 
   def update
-    if @customer.nil? || @subscription.nil? || @customer_subscription.nil?
-      render json: { message: 'User or subscription invalid.' }, status: :bad_request
-    elsif @customer_subscription.update(customer_subscription_params)
-      render json: { message: "#{@customer.first_name}'s subscription is now #{@customer_subscription.status}." }, status: :ok
-    else
+    if @customer.nil? || @subscription.nil? || @customer_subscription.nil? || customer_subscription_params[:status].nil?
       render json: { error: 'Unable to update subscription.' }, status: :bad_request
+    else
+      @customer_subscription.update(customer_subscription_params)
+      render json: { message: "#{@customer.first_name}'s subscription is now #{@customer_subscription.status}." }, status: :ok
     end
   end
 
@@ -41,6 +40,6 @@ class Api::V1::CustomerSubscriptionsController < ApplicationController
   end
 
   def customer_subscription_params
-    params.permit(:customer_id, :subscription_id, :frequency, :status)
+    params.require(:customer_subscription).permit(:customer_id, :subscription_id, :frequency, :status)
   end
 end
