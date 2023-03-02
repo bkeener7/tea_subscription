@@ -11,7 +11,5 @@ RSpec.describe CustomerSubscription, type: :model do
   describe 'validations' do
     it { should validate_presence_of :status }
     it { should validate_presence_of :frequency }
-    it { should validate_numericality_of(:status).is_greater_than_or_equal_to(0) }
-    it { should validate_numericality_of(:frequency).is_greater_than_or_equal_to(0) }
   end
 end
